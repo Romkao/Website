@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Weather & Clock</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;600&display=swap" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Kanit', sans-serif;
+      background: linear-gradient(to top right, #74ebd5, #9face6);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+      transition: background 0.5s ease;
+    }
+
+    body.day {
+      background: linear-gradient(to top right, #74ebd5, #9face6);
+    }
+
+    body.night {
+      background: linear-gradient(to bottom right, #2c3e50, #1a1a1a);
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 30px;
+      width: 320px;
+      height: 320px;
+      color: white;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      text-align: center;
+      position: relative;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container.night {
+      background: rgba(255, 255, 255, 0.05);
+      color: #eee;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
+    }
+
+    .toggle-btn {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      padding: 6px 12px;
+      border-radius: 12px;
+      color: white;
+      font-size: 14px;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      transition: background 0.2s ease, color 0.3s ease;
+      z-index: 10;
+    }
+
+    .toggle-btn.night {
+      background: rgba(255, 255, 255, 0.1);
+      color: #eee;
+    }
+
+    .toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    .toggle-btn.night:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    #date {
+      font-size: 18px;
+      font-weight: 600;
+      user-select: none;
+      white-space: nowrap;
+      position: fixed;
+      top: 8px;
+      left: 8px;
+      color: white;
+      z-index: 9999;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 4px 8px;
+      border-radius: 10px;
+      backdrop-filter: blur(5px);
+    }
+
+    #clock {
+      font-size: 60px;
+      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+
+    .desc {
+      font-size: 20px;
+      margin-top: 10px;
+    }
+
+    .temp {
+      font-size: 42px;
+      font-weight: bold;
+    }
+
+    #weather-icon {
+      font-size: 48px;
+      margin: 10px 0;
+    }
+
+    .footer {
+      font-size: 12px;
+      margin-top: 15px;
+      opacity: 0.6;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #note-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #f1c40f;
+      border: none;
+      border-radius: 50%;
+      width: 56px;
+      height: 56px;
+      font-size: 24px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+      cursor: pointer;
+      z-index: 999;
+      transition: background-color 0.3s ease;
+    }
+
+    #note-button:hover {
+      background-color: #f39c12;
+    }
+
+    #note-panel {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      width: 280px;
+      height: 220px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      display: none;
+      flex-direction: column;
+      z-index: 999;
+      overflow: hidden;
+      padding: 10px;
+    }
+
+    #note-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      font-size: 16px;
+      color: #333;
+      margin-bottom: 5px;
+    }
+
+    #note-textarea {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      resize: none;
+      border: none;
+      outline: none;
+      font-size: 14px;
+      font-family: 'Kanit', sans-serif;
+      color: #333;
+      background: transparent;
+    }
+
+    #close-btn {
+      cursor: pointer;
+      font-size: 14px;
+      color: red;
+    }
+
+    @media (max-width: 400px) {
+      .container {
+        width: 90vw;
+        height: auto;
+        padding: 20px;
+      }
+
+      #clock {
+        font-size: 40px;
+      }
+
+      .temp {
+        font-size: 32px;
+      }
+
+      .desc {
+        font-size: 16px;
+      }
+
+      .toggle-btn {
+        font-size: 14px;
+      }
+
+      #weather-icon {
+        font-size: 36px;
+      }
+
+      .footer {
+        font-size: 10px;
+      }
+
+      #note-panel {
+        width: 90vw;
+        height: 200px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="date"></div>
+
+  <div class="container">
+    <button class="toggle-btn" onclick="toggleView()">🔁 เปลี่ยน</button>
+
+    <div id="clock-page">
+      <h2>⏰ นาฬิกา</h2>
+      <div id="clock">--:--:--</div>
+    </div>
+
+    <div id="weather-page" class="hidden">
+      <h2>🌤 สภาพอากาศ</h2>
+      <div id="weather-icon"><i class="fa-solid fa-cloud-sun"></i></div>
+      <div class="temp" id="temperature">--°C</div>
+      <div class="desc" id="description">กำลังโหลด...</div>
+      <div class="footer" id="last-update">อัปเดต: --</div>
+    </div>
+  </div>
+
+  <!-- ปุ่มและกล่องโน้ต -->
+  <button id="note-button" title="เปิดโน้ต">📝</button>
+  <div id="note-panel">
+    <div id="note-header">
+      <span>โน้ตส่วนตัว</span>
+      <span id="close-btn">❌</span>
+    </div>
+    <textarea id="note-textarea" placeholder="พิมพ์โน้ตของคุณที่นี่..."></textarea>
+  </div>
+
+  <script>
+    let showingClock = true;
+
+    function toggleView() {
+      showingClock = !showingClock;
+      document.getElementById('clock-page').classList.toggle('hidden', !showingClock);
+      document.getElementById('weather-page').classList.toggle('hidden', showingClock);
+    }
+
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('th-TH', { hour12: false });
+      document.getElementById('clock').innerText = timeStr;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    const API_KEY = '06e31e4d3c2b9c33c874b933c7c914ec';
+    const CITY = 'Bangkok';
+    const API_URL = `https://api.openweathermap.org/data/2.5/weather?q=${CITY}&appid=${API_KEY}&units=metric&lang=th`;
+
+    function updateWeather() {
+      fetch(API_URL)
+        .then(res => res.json())
+        .then(data => {
+          const temp = Math.round(data.main.temp);
+          const desc = data.weather[0].description;
+          const icon = data.weather[0].main.toLowerCase();
+          document.getElementById('temperature').innerText = `${temp}°C`;
+          document.getElementById('description').innerText = desc;
+          const iconMap = {
+            clear: 'fa-sun',
+            clouds: 'fa-cloud',
+            rain: 'fa-cloud-showers-heavy',
+            thunderstorm: 'fa-bolt',
+            drizzle: 'fa-cloud-rain',
+            snow: 'fa-snowflake',
+            mist: 'fa-smog'
+          };
+          const iconClass = iconMap[icon] || 'fa-cloud-sun';
+          document.getElementById('weather-icon').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+          document.getElementById('last-update').innerText = `อัปเดต: ${new Date().toLocaleString('th-TH')}`;
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById('description').innerText = "ไม่สามารถโหลดข้อมูลได้";
+        });
+    }
+    updateWeather();
+    setInterval(updateWeather, 600000);
+
+    function applyThemeByTime() {
+      const hour = new Date().getHours();
+      const isNight = (hour >= 18 || hour < 5);
+      document.body.classList.toggle("night", isNight);
+      document.body.classList.toggle("day", !isNight);
+      document.querySelector('.container').classList.toggle("night", isNight);
+      document.querySelector('.toggle-btn').classList.toggle("night", isNight);
+    }
+    applyThemeByTime();
+    setInterval(applyThemeByTime, 60000);
+
+    function updateDate() {
+      const now = new Date();
+      const options = {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        calendar: 'buddhist'
+      };
+      document.getElementById('date').innerText = now.toLocaleDateString('th-TH', options);
+    }
+    updateDate();
+    setInterval(updateDate, 3600000);
+
+    // ฟีเจอร์โน้ต
+    const noteBtn = document.getElementById('note-button');
+    const notePanel = document.getElementById('note-panel');
+    const noteText = document.getElementById('note-textarea');
+    const closeBtn = document.getElementById('close-btn');
+
+    noteBtn.addEventListener('click', () => {
+      notePanel.style.display = (notePanel.style.display === 'flex') ? 'none' : 'flex';
+    });
+
+    closeBtn.addEventListener('click', () => {
+      notePanel.style.display = 'none';
+    });
+
+    window.addEventListener('load', () => {
+      const savedNote = localStorage.getItem('personalNote');
+      if (savedNote) noteText.value = savedNote;
+    });
+
+    noteText.addEventListener('input', () => {
+      localStorage.setItem('personalNote', noteText.value);
+    });
+  </script>
+</body>
+</html>
