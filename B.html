@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Premium Profile</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: url('https://images.unsplash.com/photo-1508780709619-79562169bc64?auto=format&fit=crop&w=1500&q=80') no-repeat center center/cover;
+      height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      overflow: hidden;
+      position: relative;
+      color: white;
+    }
+
+    #particles {
+      position: absolute;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .profile-card {
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px);
+      border-radius: 20px;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      z-index: 2;
+      color: white;
+      width: 600px;
+      text-align: center;
+    }
+
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .user-name {
+      margin-top: 20px;
+      font-size: 28px;
+      font-weight: 600;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .user-name span {
+      margin-left: 10px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .user-name span::after {
+      content: 'Premium';
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #222;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+    }
+
+    .user-name span:hover::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-5px);
+    }
+
+    .joined {
+      font-size: 13px;
+      color: #ccc;
+      margin-top: 5px;
+    }
+
+    .music-player {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      border-radius: 12px;
+      width: 500px;
+      z-index: 2;
+    }
+
+    .music-player img {
+      width: 60px;
+      border-radius: 10px;
+      margin-right: 15px;
+    }
+
+    .music-player h4 {
+      margin-bottom: 5px;
+    }
+
+    .controls {
+      margin-left: auto;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particles"></canvas>
+
+  <div class="profile-card">
+    <img class="avatar" src="https://i.pinimg.com/736x/40/61/51/406151a2e0fcce5672c7765ea070938d.jpg" alt="Avatar">
+
+    <h2 class="user-name">
+      <span id="typed"></span>
+      <span>💎</span>
+    </h2>
+    <p class="joined">joined over 1 year ago</p>
+  </div>
+
+  <div class="music-player">
+    <img src="https://i.scdn.co/image/ab67616d0000b273f3ffb1a321c40a3c221d1f08" alt="Album Art">
+    <div>
+      <h4>Marshmello - Alone</h4>
+      <p>0:37 — 6:14</p>
+    </div>
+    <div class="controls">
+      ▶️ ⏸️ ⏩
+    </div>
+  </div>
+
+  <script>
+    // Typewriter effect
+    const element = document.getElementById("typed");
+    const text = "Specter";
+    let index = 0;
+    let deleting = false;
+
+    function typeWriter() {
+      if (!deleting && index <= text.length) {
+        element.textContent = text.substring(0, index++);
+        setTimeout(typeWriter, 150);
+      } else if (deleting && index >= 0) {
+        element.textContent = text.substring(0, index--);
+        setTimeout(typeWriter, 100);
+      } else {
+        deleting = !deleting;
+        setTimeout(typeWriter, 800);
+      }
+    }
+    typeWriter();
+
+    // Particle effect
+    const canvas = document.getElementById("particles");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    let particlesArray = [];
+
+    for (let i = 0; i < 80; i++) {
+      particlesArray.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 2 + 1,
+        speedX: Math.random() * 1 - 0.5,
+        speedY: Math.random() * 1 - 0.5
+      });
+    }
+
+    function animateParticles() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particlesArray.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.fill();
+      });
+
+      requestAnimationFrame(animateParticles);
+    }
+
+    animateParticles();
+  </script>
+</body>
+</html>
